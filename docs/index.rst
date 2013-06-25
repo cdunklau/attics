@@ -3,7 +3,7 @@ Attics
 
 Attics is a generator for simple sites, written in Python_, and leverages
 Markdown_ and Jinja2_ for content generation and templating. It supports
-Python versions 2.6, 2.7, 3.2, and 3.3.
+Python versions 2.6 and 2.7.
 
 .. _Python: http://www.python.org/
 .. _Markdown: http://pythonhosted.org/Markdown/
@@ -89,7 +89,7 @@ Commands
 
 The ``attics`` command is the main interface into the program:
 
-``attics [options] COMMAND [args]``
+``attics [options]``
     Options:
 
     ``-c CONFIGFILE, --config=CONFIGFILE``
@@ -112,15 +112,6 @@ The ``attics`` command is the main interface into the program:
         the ``[colors]`` section with a value of ``blue``, this will override
         it to ``yellow`` if provided on the command line:
         ``-O colors.favorite=yellow``
-
-``attics generate``
-    Attempt to find a ``site.ini`` file in the current folder and use that to
-    generate the site content.
-
-``attics testtheme THEMEDIR``
-    Validate the structure and configuration files in THEMEDIR to ensure they
-    are valid. 
-
 
 Contents:
 
