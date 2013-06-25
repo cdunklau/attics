@@ -35,7 +35,7 @@ class Color(object):
             hue, lightness, saturation = _rgb_to_hls(red, green, blue)
         elif hsl:
             hue, saturation, lightness = (
-                fmod(hsl[0], 1.0),
+                fmod(fmod(hsl[0], 1.0) + 1.0, 1.0),
                 _clip_to_range(hsl[1], 0.0, 1.0),
                 _clip_to_range(hsl[2], 0.0, 1.0),
             )

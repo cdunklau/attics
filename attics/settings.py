@@ -1,8 +1,3 @@
-from __future__ import absolute_import
-
-import os.path
-
-
 def create_default_settings():
     return {
         'attics': {

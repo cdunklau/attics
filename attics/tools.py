@@ -62,7 +62,6 @@ def run(config):
 
 
 def main():
-    print sys.argv
     args = parse_args()
     setup_logger(args.verbosity)
     config_filename = os.path.abspath(args.config)
