@@ -1,0 +1,6 @@
+*.py[co]
+.tox
+.coverage
+venv
+MANIFEST
+*.egg[_-]info/

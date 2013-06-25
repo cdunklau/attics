@@ -1,0 +1,4 @@
+include *.rst
+include attics/css_colors.csv
+recursive-include attics/themes *.css *.html *.ini
+recursive-include attics/tests/testdata *.ini *.css *.html

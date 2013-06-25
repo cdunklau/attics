@@ -1,0 +1,15 @@
+{% set secondary = colors.primary|complemented %}
+{% set background = secondary|desaturated(50) %}
+body {
+  font-family: Verdana, Arial, sans-serif;
+  color: {{ colors.text }};
+  background-color: {{ background }};
+}
+
+h1,h2,h3,h4,h5 {
+  color: {{ colors.heading }};
+}
+
+div#header {
+  color: {{ colors.title }};
+}

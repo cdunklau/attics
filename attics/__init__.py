@@ -1,0 +1,5 @@
+__title__ = 'attics'
+__version__ = '0.0.2-dev'
+__author__ = 'Colin Dunklau'
+__license__ = 'unreleased'
+__copyright__ = 'Copyright 2013 Colin Dunklau'
