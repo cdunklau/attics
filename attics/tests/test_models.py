@@ -2,41 +2,40 @@ from __future__ import absolute_import
 
 import unittest
 
-import pytest
-
-from attics.models import HSLColor, RGBColor, RGBPercentageColor
+from attics.models import Color, Length
 
 
-class HSLColorTestCase(unittest.TestCase):
+class ColorTestCase(unittest.TestCase):
     def test_repr(self):
-        args = 120, 100, 100
-        output = '<HSLColor(hue=120, saturation=100%, lightness=100%)>'
-        assert repr(HSLColor(*args)) == output
+        hsl = 0.333333, 1, 0.5
+        rgb = 0, 1, 0
+        output = '<Color rgb(%s%%, %s%%, %s%%)>' % (0, 100, 0)  # blue!
+        assert repr(Color(hsl=hsl)) == output
+        assert repr(Color(rgb=rgb)) == output
 
     def test_repr_alpha(self):
-        args = 120, 100, 100, 0.8
-        output = (
-            '<HSLColor(hue=120, '
-            'saturation=100%, '
-            'lightness=100%, '
-            'alpha=0.8)>'
-        )
-        assert repr(HSLColor(*args)) == output
+        hsl = 0.33333, 1, 0.5
+        rgb = 0, 1, 0
+        alpha = 0.8
+        output = '<Color rgba(%s%%, %s%%, %s%%, %s)>' % (0, 100, 0, 0.8)
+        assert repr(Color(hsl=hsl, alpha=alpha)) == output
+        assert repr(Color(rgb=rgb, alpha=alpha)) == output
 
     def test_str(self):
-        args = 120, 100, 100
-        assert str(HSLColor(*args)) == 'hsl(120, 100%, 100%)'
+        rgb = 0, 1, 0
+        assert str(Color(rgb=rgb)) == 'rgb(0%, 100%, 0%)'
 
     def test_str_alpha(self):
-        args = 120, 100, 100, 0.8
-        assert str(HSLColor(*args)) == 'hsla(120, 100%, 100%, 0.8)'
+        rgb = 0, 1, 0
+        alpha = 0.8
+        assert str(Color(rgb=rgb, alpha=alpha)) == 'rgba(0%, 100%, 0%, 0.8)'
 
-    def test_clipping_high(self):
-        color = HSLColor(360, 101, 101, 1.1)
-        assert color.hue == '0'
-        assert color.saturation == '100%'
-        assert color.lightness == '100%'
-        assert color.alpha == '1'
+    def test_hsl_clipping_high(self):
+        color = Color(hsl=(1, 1.1, 1.1), alpha=1.1)
+        assert color.hue == 0
+        assert color.saturation == 1
+        assert color.lightness == 1
+        assert color.alpha == 1
 
     def test_clipping_low(self):
         color = HSLColor(720, -1, -1, -0.1)
@@ -53,16 +52,6 @@ class HSLColorTestCase(unittest.TestCase):
 
 
 class RGBColorTestCase(unittest.TestCase):
-    def test_repr(self):
-        color = RGBColor(255, 255, 255)
-        output = '<RGBColor(red=255, green=255, blue=255)>'
-        assert repr(color) == output
-
-    def test_repr_alpha(self):
-        color = RGBColor(255, 255, 255, 0.8)
-        output = '<RGBColor(red=255, green=255, blue=255, alpha=0.8)>'
-        assert repr(color) == output
-
     def test_str_function(self):
         color = RGBColor(255, 255, 255, preferhex=False)
         assert str(color) == 'rgb(255, 255, 255)'
@@ -111,7 +100,7 @@ class RGBPercentageColorTestCase(unittest.TestCase):
     def test_repr_alpha(self):
         color = RGBPercentageColor(100, 100, 100, 0.8)
         output = ('<RGBPercentageColor(red=100%, green=100%, '
-                    'blue=100%, alpha=0.8)>')
+                  'blue=100%, alpha=0.8)>')
         assert repr(color) == output
 
     def test_str(self):
@@ -137,4 +126,3 @@ class RGBPercentageColorTestCase(unittest.TestCase):
         assert color.green == '0%'
         assert color.blue == '0%'
         assert color.alpha == '0'
-

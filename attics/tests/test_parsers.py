@@ -1,9 +1,6 @@
 from __future__ import absolute_import
 
 import unittest
-import itertools
-
-import pytest
 
 from attics.parsers import css_grammar
 

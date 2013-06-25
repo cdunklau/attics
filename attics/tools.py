@@ -151,7 +151,6 @@ def find_themedir(themespec, working_dir):
     return themedir
 
 
-
 def open_file(filename, mode='r'):
     try:
         return io.open(filename, mode, encoding="utf-8")
@@ -247,6 +246,7 @@ def parse_args(args=None):
     parser = argparse.ArgumentParser(
         usage="%(prog)s [OPTIONS]",
         description=description,
+        epilog=epilog,
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     parser.add_argument(
@@ -288,6 +288,6 @@ def parse_args(args=None):
         default=(),
         help='Configuration value override.',
     )
-    if args == None:
+    if args is None:
         return parser.parse_args()
     return parser.parse_args(args)

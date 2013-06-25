@@ -2,13 +2,12 @@ from __future__ import absolute_import
 
 from functools import wraps
 
-import jinja2
-
 from attics.models import Color
 from attics.parsers import parse_color
 
 
 COLOR_FILTERS = {}
+
 
 def _color_filter(f):
     """

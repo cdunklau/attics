@@ -15,7 +15,7 @@ with open(os.path.join(os.path.dirname(__file__), 'css_colors.csv')) as _fp:
         COLOR_VALUES[name] = (red, green, blue)
     del name, red, green, blue, line
 
-LENGTH_UNITS =  frozenset([
+LENGTH_UNITS = frozenset([
     # Relative
     'em', 'ex', 'ch', 'rem', 'vw', 'vh', 'vmin', 'vmax',
     # Absolute
@@ -97,8 +97,10 @@ sign = ('+' | '-')?
 def parse_color(candidate):
     return css_grammar(candidate).color()
 
+
 def parse_length(candidate):
     return css_grammar(candidate).length()
+
 
 def parse_number(candidate):
     return float(css_grammar(candidate).number())

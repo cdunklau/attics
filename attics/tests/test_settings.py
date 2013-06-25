@@ -1,18 +1,16 @@
 from __future__ import absolute_import
 
 import unittest
-import tempfile
 import io
 import textwrap
 import ConfigParser
 
-import pytest
-
 from attics.settings import config_to_dict, merge_dict_of_dicts
+
 
 class ConfigToDictTestCase(unittest.TestCase):
     def run_config_to_dict(self, config_string):
-        fp = io.StringIO(textwrap.dedent(config_string))
+        fp = io.BytesIO(textwrap.dedent(config_string))
         config = ConfigParser.RawConfigParser()
         config.readfp(fp)
         return config_to_dict(config)

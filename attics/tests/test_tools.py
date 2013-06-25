@@ -7,7 +7,6 @@ import shutil
 import argparse
 
 from attics.tools import run, make_configuration
-from attics.settings import create_default_settings
 
 testdata_dir = os.path.join(
     os.path.dirname(os.path.abspath(__file__)),
@@ -20,8 +19,7 @@ class AtticsTestCase(unittest.TestCase):
         self.outdir = tempfile.mkdtemp(prefix='attics_test')
 
     def tearDown(self):
-        pass
-        #shutil.rmtree(self.outdir)
+        shutil.rmtree(self.outdir)
 
     def test_run_attics(self):
         args = argparse.Namespace(

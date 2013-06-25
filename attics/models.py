@@ -43,7 +43,7 @@ class Color(object):
         self.red, self.green, self.blue = red, green, blue
         self.hue, self.saturation, self.lightness = hue, saturation, lightness
 
-        self.alpha = 1.0 if alpha is None else alpha
+        self.alpha = 1.0 if alpha is None else _clip_to_range(alpha, 0.0, 1.0)
 
     @classmethod
     def from_rgb_integer_strings(cls, red, green, blue, alpha='1.0'):
@@ -103,6 +103,9 @@ class Color(object):
             return u'rgba(%s, %s, %s, %s)' % (
                 rgb + (_format_float(self.alpha),)
             )
+
+    def __str__(self):
+        return unicode(self).decode('utf-8')
 
     def __repr__(self):
         return '<Color %s>' % unicode(self).decode('ascii')
