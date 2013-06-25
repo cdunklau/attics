@@ -28,27 +28,27 @@ def _color_filter(f):
 
 @_color_filter
 def lightened(value, percent):
-    return value.lightened(float(percent))
+    return value.lightened(percent)
 
 
 @_color_filter
 def darkened(value, percent):
-    return value.darkened(float(percent))
+    return value.darkened(percent)
 
 
 @_color_filter
 def saturated(value, percent):
-    return value.saturated(float(percent))
+    return value.saturated(percent)
 
 
 @_color_filter
 def desaturated(value, percent):
-    return value.desaturated(float(percent))
+    return value.desaturated(percent)
 
 
 @_color_filter
 def rotated(value, degrees):
-    return value.rotated(float(degrees))
+    return value.rotated(degrees)
 
 
 @_color_filter

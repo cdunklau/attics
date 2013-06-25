@@ -1,0 +1,8 @@
+-   implement lengths
+-   implement static folder
+-   implement url_prefix
+-   implement navigation
+-   implement image substitution
+-   document custom filters
+-   add quickstart command
+-   test coverage!
