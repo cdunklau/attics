@@ -8,7 +8,6 @@ from attics.models import Color, Length
 
 
 with open(os.path.join(os.path.dirname(__file__), 'css_colors.csv')) as _fp:
-    print _fp.name
     COLOR_VALUES = {}
     for line in _fp:
         name, red, green, blue = line.strip().split(',')

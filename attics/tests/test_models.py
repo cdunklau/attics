@@ -4,31 +4,31 @@ import unittest
 
 from attics.models import Color
 
+NORM_GREEN_HSL = 0.333333, 1, 0.5
+NORM_GREEN_RGB = 0, 1, 0
+HEX_GREEN = '#00FF00'
+
 
 class ColorTestCase(unittest.TestCase):
     def test_repr(self):
-        hsl = 0.333333, 1, 0.5
-        rgb = 0, 1, 0
-        output = '<Color rgb(%s%%, %s%%, %s%%)>' % (0, 100, 0)  # blue!
-        assert repr(Color(hsl=hsl)) == output
-        assert repr(Color(rgb=rgb)) == output
+        output = '<Color %s>' % HEX_GREEN
+        assert repr(Color(hsl=NORM_GREEN_HSL)) == output
+        assert repr(Color(rgb=NORM_GREEN_RGB)) == output
 
     def test_repr_alpha(self):
-        hsl = 0.33333, 1, 0.5
-        rgb = 0, 1, 0
         alpha = 0.8
-        output = '<Color rgba(%s%%, %s%%, %s%%, %s)>' % (0, 100, 0, 0.8)
-        assert repr(Color(hsl=hsl, alpha=alpha)) == output
-        assert repr(Color(rgb=rgb, alpha=alpha)) == output
+        output = '<Color rgba(0, 255, 0, 0.8)>'
+        assert repr(Color(hsl=NORM_GREEN_HSL, alpha=alpha)) == output
+        assert repr(Color(rgb=NORM_GREEN_RGB, alpha=alpha)) == output
 
     def test_str(self):
-        rgb = 0, 1, 0
-        assert str(Color(rgb=rgb)) == 'rgb(0%, 100%, 0%)'
+        assert str(Color(hsl=NORM_GREEN_HSL)) == HEX_GREEN
+        assert str(Color(rgb=NORM_GREEN_RGB)) == HEX_GREEN
 
     def test_str_alpha(self):
-        rgb = 0, 1, 0
         alpha = 0.8
-        assert str(Color(rgb=rgb, alpha=alpha)) == 'rgba(0%, 100%, 0%, 0.8)'
+        color = Color(rgb=NORM_GREEN_RGB, alpha=alpha)
+        assert str(color) == 'rgba(0, 255, 0, 0.8)'
 
     def test_alpha_clipping_high(self):
         color = Color(rgb=(1, 1, 1), alpha=1.1)

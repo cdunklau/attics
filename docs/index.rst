@@ -1,13 +1,14 @@
 Attics
 ######
 
-Attics is a generator for simple sites, written in Python_, and leverages
-Markdown_ and Jinja2_ for content generation and templating. It supports
+Attics is a generator for simple sites, written in Python_. It supports
 Python versions 2.6 and 2.7.
 
 .. _Python: http://www.python.org/
-.. _Markdown: http://pythonhosted.org/Markdown/
-.. _Jinja2: http://jinja.pocoo.org/
+
+While there are other (better) static site generators available, I wanted
+a way to make very simple sites with easily customizable themes. Attics is
+intended to be easy to use for non-programmers.
 
 Basic usage
 ===========
@@ -16,8 +17,8 @@ The configuration file
 ======================
 
 Attics uses a configuration file with INI-like syntax, its default name is
-"attics.ini". There is one required section (*site*) with one required option
-(*title*). A minimal example::
+"site.ini". There is one required section ("site") with one required option
+("title"). A minimal example::
 
     [site]
     title: My Attics Site

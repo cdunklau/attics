@@ -1,7 +1,13 @@
 Attics
 ######
 
-Attics is a simple static site generator. It's really new.
+Attics is a simple static site generator. It's written in Python_, and
+leverages Markdown_ and Jinja2_ for content generation and templating.
+It's also really new.
+
+.. _Python: http://www.python.org/
+.. _Markdown: http://pythonhosted.org/Markdown/
+.. _Jinja2: http://jinja.pocoo.org/
 
 Features
 ========

@@ -1,15 +1,48 @@
-{% set secondary = colors.primary.complemented() %}
-{% set background = secondary.desaturated(50) %}
+/*
+{% set primary = colors.primary.purified() %}
+primary color: {{ primary }}
+{% set secondary = primary.complemented() %}
+secondary color: {{ secondary }}
+{% set textcolor = secondary.darkened(50) %}
+text color: {{ textcolor }}
+{% set sep = lengths.separation %}
+{% set textbackground = primary.desaturated(50).lightened(130) %}
+text background color: {{ textbackground }}
+*/
 body {
   font-family: Verdana, Arial, sans-serif;
-  color: {{ colors.text }};
-  background-color: {{ background }};
+  background-color: {{ primary }};
+}
+
+/* reset containers */
+body, div {
+  border: 0;
+  margin: 0;
+  padding: 0;
 }
 
 h1,h2,h3,h4,h5 {
-  color: {{ colors.heading }};
+  font-family: "Times New Roman", "Times", serif;
+  color: {{ primary.desaturated(30).lightened(50) }};
 }
 
 div#header {
-  color: {{ colors.title }};
+  border: solid {{ sep }} {{ secondary }};
+  padding: {{ sep }};
+  margin: {{ sep }};
+  background-color: {{ textbackground }}
+}
+
+div#header h1 {
+  color: {{ primary }};
+  font-size: 3em;
+  margin: 0;
+}
+
+div#content {
+  color: {{ textcolor }};
+  border: solid {{ sep }} {{ secondary }};
+  padding: {{ sep }};
+  margin: {{ sep }};
+  background-color: {{ textbackground }}
 }

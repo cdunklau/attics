@@ -237,7 +237,7 @@ def get_args_config(args):
 
     """
     args_regex = re.compile(
-        r'^([a-z_]+)\.([a-z_]+)\.(?:=|\s+)(.+)$'
+        r'^([a-z_]+)\.([a-z_]+)(?:=|\s+)(.+)$'
     )
     base = {'site': {}}
     if args.input_path:
@@ -304,7 +304,7 @@ def parse_args(args=None):
         metavar='OPTION',
         dest='options',
         action='append',
-        default=(),
+        default=[],
         help='Configuration value override.',
     )
     if args is None:

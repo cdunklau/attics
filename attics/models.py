@@ -93,14 +93,14 @@ class Color(object):
 
     def __unicode__(self):
         rgb = (
-            _denorm_as_percent_string(self.red),
-            _denorm_as_percent_string(self.green),
-            _denorm_as_percent_string(self.blue),
+            _denorm_as_byte_integer(self.red),
+            _denorm_as_byte_integer(self.green),
+            _denorm_as_byte_integer(self.blue),
         )
         if round(self.alpha, 2) >= 1.00:
-            return u'rgb(%s, %s, %s)' % rgb
+            return u'#%02X%02X%02X' % rgb
         else:
-            return u'rgba(%s, %s, %s, %s)' % (
+            return u'rgba(%d, %d, %d, %s)' % (
                 rgb + (_format_float(self.alpha),)
             )
 
@@ -108,7 +108,7 @@ class Color(object):
         return unicode(self).decode('utf-8')
 
     def __repr__(self):
-        return '<Color %s>' % unicode(self).decode('ascii')
+        return '<Color %s>' % str(self)
 
     def lightened(self, percent):
         """
@@ -164,6 +164,13 @@ class Color(object):
         """
         return self.rotated(180)
 
+    def purified(self):
+        """
+        Return a new :class:`Color` instance which is a pure hue
+        (100% saturation and 50% lightness).
+
+        """
+        return Color(hsl=(self.hue, 1, 0.5), alpha=self.alpha)
 
 class Length(object):
     def __init__(self, value, unit):
@@ -193,6 +200,10 @@ def _norm_degrees(degrees_string):
 
 def _denorm_as_percent_string(normval):
     return u'%s%%' % _format_float(normval * 100.0)
+
+
+def _denorm_as_byte_integer(normval):
+    return int(round(normval * 255.0, 0))
 
 
 def _format_float(fval):
