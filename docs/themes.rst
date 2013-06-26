@@ -105,32 +105,35 @@ probably want to do that from the stylesheet.
     h1,h2,h3,h4 {
         color: {{ colors.primary }};
     }
-    div#maincolumn {
-        width: {{ lengths.main_column_width }};
-        height: 100%;
-    }
 
-There are several filters that work with colors. This makes it a snap to use
-only a few colors on which to base the entire theme.
+Using Colors
+------------
+
+Colors specified in the config file are parsed into a unified type. You can
+use the methods on the color objects to transform them in various ways.
+This makes it a snap to use only a few colors on which to base the entire
+theme:
 
 .. code-block:: css+jinja
 
     body {
         color: {{ colors.text }};
-        background-color: {{ colors.primary|desaturated(50) }};
+        background-color: {{ colors.primary.desaturated(50) }};
     }
     h1,h2,h3,h4 {
-        color: {{ colors.primary|lightened(30) }};
-    }
-    div#maincolumn {
-        width: {{ lengths.main_column_width }};
-        height: 100%;
+        color: {{ colors.primary.lightened(30) }};
     }
 
+You can use the ``parse_color`` function to turn a valid CSS color string
+into a color type, so you can use the transformation methods:
 
+.. code-block:: css+jinja
 
-
-
-
-
+    {% set textcolor = parse_color("#0000aa") %}
+    body {
+        color: {{ textcolor }};
+    }
+    h1,h2,h3,h4 {
+        color: {{ textcolor.lightened(30) }};
+    }
 

@@ -11,10 +11,11 @@ import pprint
 import textwrap
 
 import jinja2
+from ometa.runtime import ParseError
 
 from attics import settings
 from attics.processors import MarkdownReader
-from attics.filters import COLOR_FILTERS
+from attics.parsers import parse_color
 
 
 logger = logging.getLogger(__name__)
@@ -88,16 +89,35 @@ def make_configuration(config_filename, args):
         "Resolved configuration: \n%s",
         pprint.pformat(config, indent=2, width=70)
     )
+    logger.info("Validating and processing configuration")
+    process_and_validate_config(config)
     return config
+
+
+def process_and_validate_config(config):
+    """
+    Validate config and change relevant section values into unified
+    types.
+
+    Only validates colors at the moment.
+
+    """
+    parsed_colors = {}
+    for colorref, colorstr in config['colors'].iteritems():
+        try:
+            parsed_colors[colorref] = parse_color(colorstr)
+        except ParseError:
+            logger.warning('Failed to parse color "%s", ignoring' % colorstr)
+    config['colors'] = parsed_colors
 
 
 def setup_environment(site, colors, lengths, images):
     jinjaenv = jinja2.Environment(undefined=jinja2.StrictUndefined)
-    jinjaenv.filters.update(COLOR_FILTERS)
     jinjaenv.globals['site'] = site
     jinjaenv.globals['colors'] = colors
     jinjaenv.globals['lengths'] = lengths
     jinjaenv.globals['images'] = images
+    jinjaenv.globals['parse_color'] = parse_color
     return jinjaenv
 
 

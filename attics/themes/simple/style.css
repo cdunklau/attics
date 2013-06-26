@@ -1,5 +1,5 @@
-{% set secondary = colors.primary|complemented %}
-{% set background = secondary|desaturated(50) %}
+{% set secondary = colors.primary.complemented() %}
+{% set background = secondary.desaturated(50) %}
 body {
   font-family: Verdana, Arial, sans-serif;
   color: {{ colors.text }};

@@ -78,10 +78,38 @@ configuration file.
 The "colors", "lengths", and "images" sections
 =================================================
 
-There are three other sections that are used by themes. The *colors* section
-allows you to change the colors, *lengths* allows you to change things
-like margin, border, text, and column sizes, and *images* allows you to
-provide your own images for things like logos and background images.
+There are three other sections that are used by themes, "colors", "lengths",
+and "images".
+
+The "colors" section allows you to change the colors. Configured values must
+be valid CSS/HTML colors, and also must be specific colors; that is,
+nonspecific things like "inherit", "transparent", or "WindowColor" will cause
+an error. The following are allowed (all ranges are inclusive):
+
+-   One of the sixteen basic color names
+-   One of the 147 extended color names (also known as X11 colors)
+-   The full hexadecimal form, e.g. `#FF00aa` or `#ff00aa`
+-   The shortened hexadecimal form, e.g. `#F08` or `#f0a`
+-   The `rgb()` and `rgba()` function forms:
+    -   Integer values should be from 0 to 255
+    -   Percentage values should be from 0% to 100%, and may be expressed as
+        decimals (but still require the percent sign)
+    -   Integer values and percent values may not be mixed
+    -   With `rgba()`, the fourth value (alpha) should be an integer or a
+        decimal between 0 and 1 with no percent sign
+-   The `hsl()` and `hsla()` function format, with values:
+    1.  Hue, a decimal or integer of degrees, from 0 to 360
+    2.  Saturation, a percentage from 0% to 100%
+    3.  Lightness, a percentage from 0% to 100%
+    4.  For `hsla()` only, the alpha value as an integer or decimal between
+        0 and 1 with no percent sign.
+
+The "lengths" section allows you to change things like margin, border, text,
+and column sizes. Values must be valid 
+
+The "images" section allows you to provide your own images for things like
+logos and background images.
+
 
 
 Commands
