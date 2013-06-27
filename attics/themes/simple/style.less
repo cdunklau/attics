@@ -1,0 +1,47 @@
+@blue: #133CAC;
+@yellow: spin(@blue, 180);
+@separated: 5px;
+.container {
+  border: solid @separated @yellow;
+  padding: @separated;
+  margin: @separated;
+}
+.text {
+  color: darken(@yellow, 20%);
+  background-color: lighten(@blue, 30%);
+}
+
+
+
+body {
+  font-family: Verdana, Arial, sans-serif;
+  background-color: @blue;
+}
+
+/* reset containers */
+body, div {
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+
+h1,h2,h3,h4,h5 {
+  font-family: "Times New Roman", "Times", serif;
+  color: lighten(desaturate(@blue, 30%), 50%);
+}
+
+div#header {
+  .container;
+  .text;
+}
+
+div#header h1 {
+  color: @blue;
+  font-size: 3em;
+  margin: 0;
+}
+
+div#content {
+  .text;
+  .container;
+}

@@ -16,19 +16,16 @@ following files:
 ``index.html``
     Jinja2 template which defines the layout of the pages themselves.
 
-``style.css``
-    A "dynamic" stylesheet that responds to user-configured values for colors,
-    lengths, and image URLs.
-
-All other files in the folder will be copied to the assets directory in the
-output path unless overridden by user settings.
+All other files in the folder which are registered in the config file will be
+copied to the assets directory in the output path unless overridden by user
+settings.
 
 Here is an example of the structure of a typical theme::
 
     theme_name/
     │
     ├── theme.ini
-    ├── index.html
+    ├── layout.html
     ├── style.css
     └── biglogo.png
 
@@ -55,23 +52,10 @@ ConfigParser_ module, and should contain three sections: ``[colors]``,
 An example configuration file, which fits with the example folder structure
 from above::
 
-    [colors]
-    primary: green
-    text: darkblue
-    [lengths]
-    # This should be between 500 and 800 px
-    main_column_width: 600px
-    font_size: 1.5em
+    [files]
+    stylesheet: style.css
     [images]
     logo: biglogo.png
-
-For default values, there are some restrictions to make testing simpler. The
-theme tester and site generator will reject invalid defaults.
-
--   Default values for ``[colors]`` and ``[lengths]`` may be any valid CSS
-    color and dimension, respectively.
--   Values in the ``[images]`` section are the file names of image files in
-    the ``static/img/`` folder.
 
 
 Writing Templates
@@ -85,55 +69,20 @@ designer documentation on the `Jinja2 website`_.
 The parameters from the configuration file are accessible from three global
 variables, named after the sections in the configuration file. Each default
 value's name is accessed with a dot on the end of the section name: To access
-our logo image, it's simply ``images.logo``. Inside the template, the syntax
-is:
+our logo image, it's simply ``images.logo``, and the stylesheet is just
+``files.stylesheet``. Inside the template, the syntax is:
 
 .. code-block:: html+jinja
 
-    {{ images.logo }}
-    <!-- to use in an image tag, just use it in the src attribute: -->
+    <link href="{{ files.stylesheet }}" rel="stylesheet" type="text/css">
+
     <img src="{{ images.logo }}" alt="logo">
 
-Similarly, we can access the colors and lengths as well, although you
-probably want to do that from the stylesheet.
+Along with ``files`` and ``images`` from the config file (or the user's
+overrides), the template is also passed ``page`` (the current page being
+rendered) and ``pages`` (a list of all the pages).
 
-.. code-block:: css+jinja
 
-    body {
-        color: {{ colors.text }};
-    }
-    h1,h2,h3,h4 {
-        color: {{ colors.primary }};
-    }
 
-Using Colors
-------------
 
-Colors specified in the config file are parsed into a unified type. You can
-use the methods on the color objects to transform them in various ways.
-This makes it a snap to use only a few colors on which to base the entire
-theme:
-
-.. code-block:: css+jinja
-
-    body {
-        color: {{ colors.text }};
-        background-color: {{ colors.primary.desaturated(50) }};
-    }
-    h1,h2,h3,h4 {
-        color: {{ colors.primary.lightened(30) }};
-    }
-
-You can use the ``parse_color`` function to turn a valid CSS color string
-into a color type, so you can use the transformation methods:
-
-.. code-block:: css+jinja
-
-    {% set textcolor = parse_color("#0000aa") %}
-    body {
-        color: {{ textcolor }};
-    }
-    h1,h2,h3,h4 {
-        color: {{ textcolor.lightened(30) }};
-    }
 

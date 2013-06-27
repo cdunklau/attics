@@ -1,18 +1,51 @@
+import logging
+import ConfigParser
+
+from attics.utils import open_file
+
+
+logger = logging.getLogger(__name__)
+
+
 def create_default_settings():
     return {
         'attics': {
             'input_path': 'content',
             'output_path': 'output',
+            'theme_search': None,
             'theme': 'simple',
-            'themedir': None,
         },
         'site': {
             'title': None,
         },
-        'colors': {},
-        'lengths': {},
         'images': {},
+        'files': {},
     }
+
+
+class ConfigError(Exception):
+    """Raised when a configuration file couldn't be parsed."""
+
+
+def parse_config(config_filename):
+    """
+    Parse ``config_filename`` and return the dict of dicts
+    structure representing the configuration file.
+
+    """
+    logger.debug("Attempting to parse config at '%s'", config_filename)
+    with open_file(config_filename) as cfg_fp:
+        cfg = ConfigParser.RawConfigParser()
+        try:
+            cfg.readfp(cfg_fp)
+        except ConfigParser.Error as e:
+            raise ConfigError(
+                'Failed to parse config file %s: %s' % (
+                    config_filename,
+                    e,
+                )
+            )
+    return config_to_dict(cfg)
 
 
 def config_to_dict(config):

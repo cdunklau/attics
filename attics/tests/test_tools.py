@@ -5,6 +5,8 @@ import unittest
 import tempfile
 import shutil
 import argparse
+import logging
+logging.basicConfig(level=logging.DEBUG)
 
 from attics.tools import run, make_configuration
 
@@ -22,14 +24,9 @@ class AtticsTestCase(unittest.TestCase):
         shutil.rmtree(self.outdir)
 
     def test_run_attics(self):
-        args = argparse.Namespace(
-            input_path=None,
-            output_path=None,
-            options=[]
-        )
         config = make_configuration(
             os.path.join(testdata_dir, 'site.ini'),
-            args
+            input_path=None,
+            output_path=self.outdir,
         )
-        config['attics']['output_path'] = self.outdir
         run(config)

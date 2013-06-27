@@ -3,7 +3,7 @@ from setuptools import setup
 
 from attics import __version__
 
-requires = ['jinja2', 'markdown', 'parsley']
+requires = ['jinja2', 'markdown']
 if sys.version_info < (2,7):
     requires.append('argparse')
 README = open('README.rst').read()

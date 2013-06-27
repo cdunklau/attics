@@ -7,6 +7,8 @@ import logging
 
 import markdown
 
+from attics.models import Page
+
 
 logger = logging.getLogger(__name__)
 
@@ -37,7 +39,7 @@ class MarkdownReader(object):
     def read(self, path):
         """
         Read and process a Markdown file from ``path`` and return a
-        tuple of content, metadata.
+        :class:`models.Page` instance.
 
         """
         logger.info("Reading '%s'", path)
@@ -46,12 +48,7 @@ class MarkdownReader(object):
         self._md.reset()
         content = self._md.convert(raw)
         metadata = dict((k, ' '.join(v)) for k, v in self._md.Meta.items())
-        filename_no_ext = os.path.basename(path).rsplit('.', 1)[0]
-        if 'title' not in metadata:
-            metadata['title'] = filename_no_ext
-        if 'filename' not in metadata:
-            metadata['filename'] = filename_no_ext
-        return content, metadata
+        return Page(path, content, metadata)
 
     def read_dir(self, source_dir):
         """

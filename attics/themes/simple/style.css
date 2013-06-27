@@ -1,48 +1,47 @@
-/*
-{% set primary = colors.primary.purified() %}
-primary color: {{ primary }}
-{% set secondary = primary.complemented() %}
-secondary color: {{ secondary }}
-{% set textcolor = secondary.darkened(50) %}
-text color: {{ textcolor }}
-{% set sep = lengths.separation %}
-{% set textbackground = primary.desaturated(50).lightened(130) %}
-text background color: {{ textbackground }}
-*/
+.container {
+  border: solid 5px #ac8313;
+  padding: 5px;
+  margin: 5px;
+}
+.text {
+  color: #503d09;
+  background-color: #6a8dee;
+}
 body {
   font-family: Verdana, Arial, sans-serif;
-  background-color: {{ primary }};
+  background-color: #133cac;
 }
-
 /* reset containers */
-body, div {
+body,
+div {
   border: 0;
   margin: 0;
   padding: 0;
 }
-
-h1,h2,h3,h4,h5 {
+h1,
+h2,
+h3,
+h4,
+h5 {
   font-family: "Times New Roman", "Times", serif;
-  color: {{ primary.desaturated(30).lightened(50) }};
+  color: #cfd8ef;
 }
-
 div#header {
-  border: solid {{ sep }} {{ secondary }};
-  padding: {{ sep }};
-  margin: {{ sep }};
-  background-color: {{ textbackground }}
+  border: solid 5px #ac8313;
+  padding: 5px;
+  margin: 5px;
+  color: #503d09;
+  background-color: #6a8dee;
 }
-
 div#header h1 {
-  color: {{ primary }};
+  color: #133cac;
   font-size: 3em;
   margin: 0;
 }
-
 div#content {
-  color: {{ textcolor }};
-  border: solid {{ sep }} {{ secondary }};
-  padding: {{ sep }};
-  margin: {{ sep }};
-  background-color: {{ textbackground }}
+  color: #503d09;
+  background-color: #6a8dee;
+  border: solid 5px #ac8313;
+  padding: 5px;
+  margin: 5px;
 }

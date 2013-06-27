@@ -1,211 +1,211 @@
-from __future__ import division
+import os
+import logging
 
-from math import fmod
-from colorsys import hls_to_rgb as _hls_to_rgb, rgb_to_hls as _rgb_to_hls
+import jinja2
+
+from attics.settings import parse_config
 
 
-class Color(object):
+logger = logging.getLogger(__name__)
+
+
+BUILT_IN_THEMES = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)),
+    'themes',
+)
+
+
+class FileNotFound(Exception):
+    """Raised when an expected file was not found"""
+
+
+class Theme(object):
+    template_name = 'layout.html'
+    theme_config_file = 'theme.ini'
+
+    builtin = False
+    """True if the theme is built in to Attics"""
+
+    location = None
     """
-    An abstract representation of a CSS color value.
+    The file path to the theme
 
-    Methods assume instances are not mutated, create a new instance
-    instead!
-
+    An absolute path if built in, relative to the current working
+    directory if not.
     """
-    def __init__(self, rgb=None, hsl=None, alpha=None):
-        """
-        Inputs must be normalized from the native CSS formats to the
-        inclusive range 0.0-1.0. Inputs outside this range will be
-        clipped to the edge of the range, except for hue, which will
-        be wrapped around.
 
-        Exactly one of ``rgb`` and ``hsl`` must be specified, they
-        are mutually exclusive.
+    name = None
+    """The name of the theme"""
 
-        :param rgb: Iterable of three floats between 0.0 and 1.0:
-                    red, green, and blue amounts.
-        :param hsl: Iterable of three floats between 0.0 and 1.0:
-                    hue, saturation, and lightness.
-        :param alpha: Alpha value between 0.0 and 1.0.
+    files = None
+    """
+    A dict of :class:`File` instances keyed by the name specified
+    in the config file, to be passed to the template to render.
+    """
+
+    images = None
+    """
+    A dict of :class:`Image` instances keyed by the name specified
+    in the config file, to be passed to the template to render.
+    """
+
+    template = None
+    """The ``jinja2.Template`` instance used for rendering pages"""
+
+    _themespec = None
+    _search_dir = None
+
+    def __init__(self, themespec, search_dir):
+        self._themespec, self._search_dir = themespec, search_dir
+        self.images, self.files = {}, {}
+
+    def validate(self):
+        self._find_themedir()
+        self._validate_files()
+        self._parse_template()
+        config = parse_config(os.path.join(self.location, 'theme.ini'))
+        self.update_files(config, self.location)
+        logger.info("Using theme '%s' at '%s'", self.name, self.location)
+
+    def render_template(self, page, pages, site):
         """
-        if (rgb is None) == (hsl is None):
-            raise TypeError("Must specify exactly one of 'rgb', 'hsl'")
-        if rgb:
-            red, green, blue = [_clip_to_range(c, 0.0, 1.0) for c in rgb]
-            hue, lightness, saturation = _rgb_to_hls(red, green, blue)
-        elif hsl:
-            hue, saturation, lightness = (
-                fmod(fmod(hsl[0], 1.0) + 1.0, 1.0),
-                _clip_to_range(hsl[1], 0.0, 1.0),
-                _clip_to_range(hsl[2], 0.0, 1.0),
+        Render :attr:`template` with the images, files, and page
+        content and metadata.
+
+        :param page:    the :class:`Page` to render as content
+        :param pages:   a list of :class:`Page` instances to use in
+                        for navigation links
+        :param site:    a dict of strings for use in the template
+
+        """
+        return self.template.render({
+            'files': self.files,
+            'images': self.images,
+            'pages': pages,
+            'page': page,
+            'site': site,
+        })
+
+    def update_files(self, config, base):
+        """
+        Resolve the image and file paths in ``config`` (relative to
+        ``base``) into :class:`Image` and :class:`File` instances
+        and update their respective attributes.
+
+        """
+        for imagespec, imagepath in config.get('images', {}).iteritems():
+            image = Image(os.path.join(base, imagepath), imagespec)
+            self.images[imagespec] = image
+        for filespec, filepath in config.get('files', {}).iteritems():
+            file = File(os.path.join(base, filepath), filespec)
+            self.files[filespec] = file
+
+    def _find_themedir(self):
+        """
+        Search for the theme name or path, and set the discovered
+        path as :attr:`location`.
+
+        Search in this order:
+
+        -   relative to :attr:`_search_dir`
+        -   a theme built in to Attics
+
+        If ``themespec`` is a path, the built in theme search will
+        be skipped.
+
+        """
+        themespec = self._themespec
+        search_dir = self._search_dir
+        logger.info("Searching for theme '%s'" % themespec)
+        themedir = os.path.join(search_dir, themespec)
+        logger.debug("Checking '%s'" % themedir)
+        if os.path.isdir(themedir):
+            logger.info("Found theme at '%s'" % themedir)
+            self.location = themespec
+            self.name = os.path.basename(themespec)
+        elif not os.path.dirname(themespec):
+            themedir = os.path.join(BUILT_IN_THEMES, themespec)
+            logger.debug("Checking '%s'" % themedir)
+            if os.path.isdir(themedir):
+                logger.info("Found built-in theme at '%s'" % themedir)
+                self.location = themedir
+                self.name = themespec
+                self.builtin = True
+        else:
+            raise FileNotFound("Could not locate theme '%s'" % themespec)
+
+    def _validate_files(self):
+        """
+        Check that :attr:`location` contains all the required files.
+
+        """
+        themedir = self.location
+        logger.debug("Validating theme at '%s'", themedir)
+        for required in (self.theme_config_file, self.template_name):
+            logger.debug("Checking for '%s'", required)
+            if not os.path.isfile(os.path.join(themedir, required)):
+                raise FileNotFound(
+                    "Could not find required file %s in theme folder '%s'" % (
+                        required,
+                        themedir,
+                    )
+                )
+        logger.debug("Theme contains all required files")
+
+    def _parse_template(self):
+        """
+        Parse the "layout.html" template into a ``jinja2.Template``
+        instance and assign it to :attr:`template`.
+
+        """
+        logger.debug(
+            'Loading template at %s' % os.path.join(
+                self.location,
+                self.template_name
             )
-            red, green, blue = _hls_to_rgb(hue, lightness, saturation)
-        self.red, self.green, self.blue = red, green, blue
-        self.hue, self.saturation, self.lightness = hue, saturation, lightness
-
-        self.alpha = 1.0 if alpha is None else _clip_to_range(alpha, 0.0, 1.0)
-
-    @classmethod
-    def from_rgb_integer_strings(cls, red, green, blue, alpha='1.0'):
-        """
-        Return a new ``Color`` instance populated from string
-        integers. If provided, ``alpha`` is a float integer.
-
-        """
-        rgb = (
-            _norm_byte_integer(red),
-            _norm_byte_integer(green),
-            _norm_byte_integer(blue),
         )
-        alpha = float(alpha)
-        return cls(rgb=rgb, alpha=alpha)
-
-    @classmethod
-    def from_rgb_percent_strings(cls, red, green, blue, alpha='1.0'):
-        """
-        Return a new ``Color`` instance populated from string
-        percentages (float strings ending in '%'). If provided,
-        ``alpha`` is a float integer.
-
-        """
-        rgb = _norm_percent(red), _norm_percent(green), _norm_percent(blue)
-        alpha = float(alpha)
-        return cls(rgb=rgb, alpha=alpha)
-
-    @classmethod
-    def from_hsl_strings(cls, hue, saturation, lightness, alpha='1.0'):
-        """
-        Return a new ``Color`` instance populated from strings.
-        Percentages are float strings ending in '%'.
-
-        :param hue: The hue value as a string float in degrees
-        :param saturation: The saturation value as a percentage
-        :param lightness: The lightness value as a percentage
-
-        """
-        hsl = (
-            _norm_degrees(hue),
-            _norm_percent(saturation),
-            _norm_percent(lightness),
+        env = jinja2.Environment(
+            undefined=jinja2.StrictUndefined,
+            loader=jinja2.FileSystemLoader(self.location),
         )
-        alpha = float(alpha)
-        return cls(hsl=hsl, alpha=alpha)
+        self.template = env.get_template(self.template_name)
+
+
+class File(object):
+    location = None
+    name = None
+    extn = None
+
+    def __init__(self, path, name=None):
+        if not os.path.isfile(path):
+            raise FileNotFound(path)
+        self.location = os.path.normpath(path)
+        self.extn = os.path.splitext(path)[1]
+        self.name = name or os.path.normpath(os.path.basename(path))
 
     def __unicode__(self):
-        rgb = (
-            _denorm_as_byte_integer(self.red),
-            _denorm_as_byte_integer(self.green),
-            _denorm_as_byte_integer(self.blue),
-        )
-        if round(self.alpha, 2) >= 1.00:
-            return u'#%02X%02X%02X' % rgb
-        else:
-            return u'rgba(%d, %d, %d, %s)' % (
-                rgb + (_format_float(self.alpha),)
-            )
-
-    def __str__(self):
-        return unicode(self).decode('utf-8')
+        return self.name + self.extn
 
     def __repr__(self):
-        return '<Color %s>' % str(self)
-
-    def lightened(self, percent):
-        """
-        Return a new :class:`Color` instance lightened by
-        ``percent``.
-
-        """
-        newlightness = self.lightness + self.lightness * (percent / 100)
-        hsl = self.hue, self.saturation, newlightness
-        return Color(hsl=hsl, alpha=self.alpha)
-
-    def darkened(self, percent):
-        """
-        Return a new :class:`Color` instance darkened by
-        ``percent``.
-
-        """
-        return self.lightened(-percent)
-
-    def saturated(self, percent):
-        """
-        Return a new :class:`Color` instance saturated by
-        ``percent``.
-
-        """
-        newsaturation = self.saturation + self.saturation * (percent / 100)
-        hsl = self.hue, newsaturation, self.lightness
-        return Color(hsl=hsl, alpha=self.alpha)
-
-    def desaturated(self, percent):
-        """
-        Return a new :class:`Color` instance desaturated by
-        ``percent``.
-
-        """
-        return self.saturated(-percent)
-
-    def rotated(self, degrees):
-        """
-        Return a new :class:`Color` instance with the hue rotated
-        by ``degrees``.
-
-        """
-        newhue = self.hue + degrees / 360.0
-        hsl = newhue, self.saturation, self.lightness
-        return Color(hsl=hsl, alpha=self.alpha)
-
-    def complemented(self):
-        """
-        Return a new :class:`Color` instance which is the complement
-        of the color.
-
-        """
-        return self.rotated(180)
-
-    def purified(self):
-        """
-        Return a new :class:`Color` instance which is a pure hue
-        (100% saturation and 50% lightness).
-
-        """
-        return Color(hsl=(self.hue, 1, 0.5), alpha=self.alpha)
-
-class Length(object):
-    def __init__(self, value, unit):
-        self.value = float(value)
-        self.unit = unit.lower()
+        return '<File %s at %s>' % (self.name, self.location)
 
 
-def _clip_to_range(value, start=0, end=1):
-    if value < start:
-        return start
-    if value > end:
-        return end
-    return value
+class Image(File):
+    def __repr__(self):
+        return '<Image %s at %s>' % (self.name, self.location)
 
 
-def _norm_percent(percent_string):
-    return float(percent_string.rstrip('%')) / 100.0
+class Page(File):
+    content = None
+    title = None
 
+    def __init__(self, path, content, metadata):
+        self.location = os.path.normpath(path)
+        self.content = content
+        self.extn = '.html'
+        no_ext = os.path.basename(os.path.splitext(path)[0])
+        self.name = metadata.get('name', no_ext)
+        self.title = metadata.get('title', no_ext)
 
-def _norm_byte_integer(integer_string):
-    return int(integer_string) / 255.0
-
-
-def _norm_degrees(degrees_string):
-    return float(degrees_string) / 360.0
-
-
-def _denorm_as_percent_string(normval):
-    return u'%s%%' % _format_float(normval * 100.0)
-
-
-def _denorm_as_byte_integer(normval):
-    return int(round(normval * 255.0, 0))
-
-
-def _format_float(fval):
-    base = u'%.2f' % round(fval, 2)
-    return base.rstrip(u'0').rstrip(u'.')
+    def __repr__(self):
+        return '<Page %s at %s>' % (self.name, self.location)
