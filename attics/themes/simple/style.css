@@ -1,15 +1,6 @@
-.container {
-  border: solid 5px #ac8313;
-  padding: 5px;
-  margin: 5px;
-}
-.text {
-  color: #503d09;
-  background-color: #6a8dee;
-}
 body {
   font-family: Verdana, Arial, sans-serif;
-  background-color: #133cac;
+  background-color: #1826b0;
 }
 /* reset containers */
 body,
@@ -24,24 +15,20 @@ h3,
 h4,
 h5 {
   font-family: "Times New Roman", "Times", serif;
-  color: #cfd8ef;
+  color: #7580ec;
 }
-div#header {
-  border: solid 5px #ac8313;
-  padding: 5px;
-  margin: 5px;
-  color: #503d09;
-  background-color: #6a8dee;
+div#outerwrapper {
+  border: solid 0.5em #ffba00;
+  padding: 0.5em;
+  margin-right: auto;
+  margin-left: auto;
+  margin-top: 2em;
+  color: #664a00;
+  background-color: #e5e7fb;
+  width: 60em;
 }
 div#header h1 {
-  color: #133cac;
+  color: #1826b0;
   font-size: 3em;
   margin: 0;
-}
-div#content {
-  color: #503d09;
-  background-color: #6a8dee;
-  border: solid 5px #ac8313;
-  padding: 5px;
-  margin: 5px;
 }

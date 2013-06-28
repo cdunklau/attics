@@ -9,12 +9,6 @@ It's also really new.
 .. _Markdown: http://pythonhosted.org/Markdown/
 .. _Jinja2: http://jinja.pocoo.org/
 
-Features
-========
-
--   Pluggable themes
--   CSS color, dimension, and image overrides
-
 Status
 ======
 

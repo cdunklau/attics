@@ -1,18 +1,9 @@
-@blue: #133CAC;
-@yellow: spin(@blue, 180);
-@separated: 5px;
-.container {
-  border: solid @separated @yellow;
-  padding: @separated;
-  margin: @separated;
-}
-.text {
-  color: darken(@yellow, 20%);
-  background-color: lighten(@blue, 30%);
-}
-
-
-
+@blue: #1826B0;
+@yellow: #FFBA00;
+@softened-blue: lighten(@blue, 30%);
+@light-blue: lighten(@blue, 55%);
+@darker-yellow: darken(@yellow, 30%);
+@separated: 0.5em;
 body {
   font-family: Verdana, Arial, sans-serif;
   background-color: @blue;
@@ -27,21 +18,28 @@ body, div {
 
 h1,h2,h3,h4,h5 {
   font-family: "Times New Roman", "Times", serif;
-  color: lighten(desaturate(@blue, 30%), 50%);
+  color: @softened-blue;
+}
+
+div#outerwrapper {
+  border: solid @separated @yellow;
+  padding: @separated;
+  margin-right: auto;
+  margin-left: auto;
+  margin-top: (@separated * 4);
+  color: @darker-yellow;
+  background-color: @light-blue;
+  width: 60em;
+}
+
+div#navigation {
 }
 
 div#header {
-  .container;
-  .text;
 }
 
 div#header h1 {
   color: @blue;
   font-size: 3em;
   margin: 0;
-}
-
-div#content {
-  .text;
-  .container;
 }

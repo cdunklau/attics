@@ -4,9 +4,6 @@ import os.path
 import unittest
 import tempfile
 import shutil
-import argparse
-import logging
-logging.basicConfig(level=logging.DEBUG)
 
 from attics.tools import run, make_configuration
 
