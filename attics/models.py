@@ -198,6 +198,7 @@ class Image(File):
 class Page(File):
     content = None
     title = None
+    index = None
 
     def __init__(self, path, content, metadata):
         self.location = os.path.normpath(path)
@@ -206,6 +207,17 @@ class Page(File):
         no_ext = os.path.basename(os.path.splitext(path)[0])
         self.name = metadata.get('name', no_ext)
         self.title = metadata.get('title', no_ext)
+        index_candidate = metadata.get('index', '0')
+        try:
+            self.index = int(index_candidate)
+        except ValueError:
+            logger.warning(
+                'Invalid index %s in page %s, ignoring' % (
+                    index_candidate,
+                    self.location,
+                )
+            )
+            self.index = 0
 
     def __repr__(self):
         return '<Page %s at %s>' % (self.name, self.location)

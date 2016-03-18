@@ -6,6 +6,8 @@ import argparse
 import logging
 import pprint
 import textwrap
+import shlex
+import subprocess
 
 from attics.settings import (
     parse_config, create_default_settings, merge_dict_of_dicts,
@@ -16,27 +18,6 @@ from attics.utils import copy_file, write_file
 
 
 logger = logging.getLogger(__name__)
-
-
-def run(config):
-    input_dir = config['attics']['input_path']
-    output_dir = config['attics']['output_path']
-
-    theme = Theme(config['attics']['theme'], config['attics']['theme_search'])
-    theme.validate()
-    theme.update_files(config, config['attics']['input_path'])
-
-    logger.info("Reading input files from '%s'", input_dir)
-    pages = MarkdownReader().read_dir(input_dir)
-    logger.info("Found %d input files", len(pages))
-
-    for page in pages:
-        rendered = theme.render_template(page, pages, config['site'])
-        write_file(os.path.join(output_dir, unicode(page)), rendered)
-    for file in theme.files.values():
-        copy_file(file.location, os.path.join(output_dir, unicode(file)))
-    for image in theme.images.values():
-        copy_file(image.location, os.path.join(output_dir, unicode(image)))
 
 
 def main():
@@ -58,6 +39,81 @@ def main():
                 "Caught exception, re-run with -vv for full details: %s" % e
             )
         sys.exit(1)
+
+
+def run(config):
+    input_dir = config['attics']['input_path']
+    output_dir = config['attics']['output_path']
+
+    theme = Theme(config['attics']['theme'], config['attics']['theme_search'])
+    theme.validate()
+    theme.update_files(config, config['attics']['input_path'])
+
+    logger.info("Reading input files from '%s'", input_dir)
+    pages = MarkdownReader().read_dir(input_dir)
+    pages.sort(key=lambda x: x.title)
+    pages.sort(key=lambda x: x.index)
+    logger.info("Found %d input files", len(pages))
+
+    for page in pages:
+        rendered = theme.render_template(page, pages, config['site'])
+        write_file(os.path.join(output_dir, unicode(page)), rendered)
+    for file in theme.files.values():
+        copy_file(file.location, os.path.join(output_dir, unicode(file)))
+    for image in theme.images.values():
+        copy_file(image.location, os.path.join(output_dir, unicode(image)))
+
+
+def compile_less_css(dirpath):
+    """
+    Attempt to compile files in ``dirpath`` ending with '.less' into
+    '.css' files.
+
+    The LESS compiler must be on PATH for this work (``lessc.exe``
+    on Windows, ``lessc`` on others).
+
+    """
+    less_input_output_files = []
+    for name in os.listdir(dirpath):
+        if name.lower().endswith('.less') and os.path.isfile(name):
+            base, ext = os.path.splitext(name)
+            less_input_output_files.append(
+                os.path.join(dirpath, '%s.%s' % (base, ext)),
+                os.path.join(dirpath, '%s.css' % base),
+            )
+    if not less_input_output_files:
+        return
+    if 'win32' in sys.platform:
+        lessc = 'lessc.exe'
+    else:
+        lessc = 'lessc'
+    logger.info(
+        "Attempting to compile %d LESS files in %s" % (
+            len(less_input_output_files),
+            dirpath,
+        )
+    )
+    try:
+        subprocess.call(lessc)
+    except OSError as e:
+        logger.warning(
+            "Could not find LESS compiler, is it installed and on PATH?"
+        )
+        return
+    for src, dst in less_input_output_files:
+        proc = subprocess.Popen(
+            [lessc, src, dst],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
+        out, err = proc.communicate()
+        if proc.returncode != 0:
+            logger.warning("Failed to compile %s, output:" % src)
+            logger.warning(out)
+            logger.warning("Error output:")
+            logger.warning(err)
+        else:
+            logger.info("Compiled %s to %s" % (src, dst))
 
 
 def make_configuration(config_filename, input_path=None, output_path=None):

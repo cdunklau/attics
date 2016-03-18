@@ -16,18 +16,59 @@ of Attics are:
     that do that stuff already.
 3.  Simple built-in themes as well as the ability to point to a custom theme.
 
-Basic usage
-===========
+Getting Started
+===============
 
-The configuration file
+To start using attics, you first need content. Create a folder to store
+everything in, and start by creating a configuration file called "site.ini".
+You can fill it with this for now::
+
+    [site]
+    title: My Attics Site
+
+Next, create a "content" folder and an "output" folder next to the config
+file. Pages are created using Markdown, using the ``.md`` extension. Here's
+an example, called "index.md"::
+
+    Title: Home
+    Index: 1
+
+    My Home Page
+    ============
+
+    Welcome to my site! Feel free to [email me](mailto:joe@example.com), or
+    check out my portfolio at [Example Porfolios Ltd.](http://joe.example.com/).
+
+The file's name will be used as the page's name, so this "index.md" file will
+be rendered at "index.html". Make sure you have an "index.md" file, since most
+web servers will use the resulting "index.html" file as the default page to
+show.
+
+You'll notice the top of the file has some metadata. This will not be rendered
+directly; some of the fields are used for processing of the files:
+
+.. data:: Title
+
+    This field is used to name the links that show up in the navigation. If
+    a file does not have this field, the file's name will be used instead.
+
+.. data:: Index
+
+    The Index field controls the order that the page links appear in the
+    site navigation section. Lower numbers make the pages appear earlier
+    in the navigation list. If this is not a number or not provided, the
+    link will show up first, by order of Title.
+
+Once you've made the content pages, you can run ``attics`` in the same folder
+as the config file. Check out the output directory for the results.
+
+
+The Configuration File
 ======================
 
 Attics uses a configuration file with INI-like syntax, its default name is
 "site.ini". There is one required section ("site") with one required option
-("title"). A minimal example::
-
-    [site]
-    title: My Attics Site
+("title"), as shown in the Getting Started section. 
 
 Sections consist of a section name (surrounded by square brackets) followed by
 zero or more ``option: value`` pairs. Section and option names must be
@@ -42,7 +83,7 @@ example::
     oup
 
 
-The "site" section
+The "site" Section
 ------------------
 
 This section contains overall settings for your project.
@@ -57,7 +98,7 @@ This section contains overall settings for your project.
 Themes may define other options in this section for you to use.
 
 
-The "attics" section
+The "attics" Section
 --------------------
 
 This section allows you to change the input and output directories, theme,
@@ -83,8 +124,14 @@ file is located.
     The folder where the generated HTML, CSS, and other files will be placed
     (default: *output*).
 
+.. data:: compile_less_css
 
-The "files" and "images" sections
+    If set to "yes', Attics will attempt to use the LESS compiler ``lessc``
+    to compile any .less files found into their .css counterparts. The names
+    of the files will be the same, except for the extension.
+
+
+The "files" and "images" Sections
 ---------------------------------
 
 Themes may define files (such as CSS and JS assets) and images (such as logos
